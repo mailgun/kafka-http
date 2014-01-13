@@ -57,6 +57,7 @@ Development
 
 Deps: >= jdk1.6.0_45
 Release:
-``bash
+
+```bash
 ./sbt release
 ```
