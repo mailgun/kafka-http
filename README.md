@@ -51,3 +51,12 @@ curl -X POST http://localhost:8091
 ```
 
 Access to consumer endpoint is serialized and there should be one client talking to one endpoint.
+
+Development
+-----------
+
+Deps: >= jdk1.6.0_45
+Release:
+``bash
+./sbt release
+```
