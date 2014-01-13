@@ -55,8 +55,10 @@ Access to consumer endpoint is serialized and there should be one client talking
 Development
 -----------
 
-Deps: >= jdk1.6.0_45
-Release:
+* Deps
+  jdk1.6.0_45
+
+* Build and release
 
 ```bash
 ./sbt release
