@@ -5,6 +5,7 @@ import scala.collection.JavaConversions._
 import java.io.IOException
 import java.util.Properties
 import java.util.HashMap
+import java.util.concurrent.TimeUnit
 
 import javax.servlet.ServletException
 import javax.servlet.http.HttpServlet
@@ -19,6 +20,7 @@ import kafka.serializer._
 import scala.collection.mutable._
 
 import com.mongodb.util.JSON
+import com.timgroup.statsd.NonBlockingStatsDClient
 
 import org.bson.BSON
 import org.bson.BSONObject
@@ -27,10 +29,15 @@ import org.bson.BasicBSONEncoder
 import org.bson.BasicBSONObject
 import org.bson.types.BasicBSONList
 
-class ProducerServlet(properties:Properties) extends HttpServlet with ReplyFormatter
+class ProducerServlet(properties:Properties, reportingProps: Properties) extends HttpServlet with ReplyFormatter
 {
   val producer = new Producer[String, Array[Byte]](new ProducerConfig(properties))
-  val logger = Logger.getLogger("kafka.rest.producer")
+  val logger = Logger.getLogger("kafka.http.producer")
+
+  var statsd = new NonBlockingStatsDClient(
+    reportingProps.getProperty("statsd.prefix"),
+    reportingProps.getProperty("statsd.host"),
+    reportingProps.getProperty("statsd.port").toInt)
 
   def asList(name: String, o:AnyRef):BasicBSONList = {
     try{
@@ -126,8 +133,10 @@ class ProducerServlet(properties:Properties) extends HttpServlet with ReplyForma
     var topic = getTopic(request)
     var messages = getObject(request)
 
+    val start = System.currentTimeMillis()
     val data = new KeyedMessage[String, Array[Byte]](topic, "key", new Array[Byte](1))
-    producer.send(messages:_*)
+    //producer.send(messages:_*)
+    statsd.recordExecutionTime("submitted", (System.currentTimeMillis() - start).toInt)
 
     var obj = new BasicBSONObject()
     obj.append("accepted", "OK")

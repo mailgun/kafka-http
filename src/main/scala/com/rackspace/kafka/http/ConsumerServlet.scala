@@ -24,7 +24,7 @@ import org.bson.BasicBSONObject
 import org.bson.types.BasicBSONList
 import com.mongodb.util.JSON
 
-class ConsumerServlet(topic:String, properties: Properties) extends HttpServlet with ReplyFormatter
+class ConsumerServlet(topic:String, properties: Properties, reportingProps: Properties) extends HttpServlet with ReplyFormatter
 {
   val consumer = Consumer.create(new ConsumerConfig(properties))
   val logger = Logger.getLogger("kafka.rest.consumer")

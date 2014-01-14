@@ -14,7 +14,7 @@ import kafka.message._
 import org.apache.log4j.Logger
 
 object Configurator {
-  val logger = Logger.getLogger("kafka.rest.config")
+  val logger = Logger.getLogger("kafka.http.config")
 
   def getServlet(args:Array[String]):HttpServlet = {
     if(args.length < 1) {
@@ -113,6 +113,27 @@ object Configurator {
       "If the consumer does not already have an established offset to consume from, " +
       "start with the earliest message present in the log rather than the latest message.")
 
+    val statsdHost = parser.accepts(
+      "statsd-host",
+      "Statsd host")
+      .withRequiredArg
+      .ofType(classOf[java.lang.String])
+      .defaultsTo("localhost")
+
+    val statsdPrefix = parser.accepts(
+      "statsd-prefix",
+      "Statsd prefix")
+      .withRequiredArg
+      .ofType(classOf[java.lang.String])
+      .defaultsTo("kafka.http.consumer")
+
+    val statsdPort = parser.accepts(
+      "statsd-port",
+      "Statsd port")
+      .withRequiredArg
+      .ofType(classOf[java.lang.Integer])
+      .defaultsTo(8125)
+
     val options: OptionSet = tryParse(parser, args)
     CommandLineUtils.checkRequiredArgs(parser, options, topic, group, zookeeper)
 
@@ -138,7 +159,15 @@ object Configurator {
 
     logger.info("Consumer Properties: %s".format(props.toString))
 
-    return new ConsumerServlet(options.valueOf(topic).toString, props)
+    val reportingProps = new Properties()
+
+    reportingProps.put("statsd.host", options.valueOf(statsdHost).toString)
+    reportingProps.put("statsd.port", options.valueOf(statsdPort).toString)
+    reportingProps.put("statsd.prefix", options.valueOf(statsdPrefix).toString)
+
+    logger.info("Reporting Properties: %s".format(reportingProps.toString))
+
+    return new ConsumerServlet(options.valueOf(topic).toString, props, reportingProps)
   }
 
   def getProducerServlet(args:Array[String]):HttpServlet = {
@@ -182,6 +211,27 @@ object Configurator {
       .ofType(classOf[java.lang.Integer])
       .defaultsTo(1024*100)
 
+    val statsdHost = parser.accepts(
+      "statsd-host",
+      "Statsd host")
+      .withRequiredArg
+      .ofType(classOf[java.lang.String])
+      .defaultsTo("localhost")
+
+    val statsdPrefix = parser.accepts(
+      "statsd-prefix",
+      "Statsd prefix")
+      .withRequiredArg
+      .ofType(classOf[java.lang.String])
+      .defaultsTo("kafka.http.producer")
+
+    val statsdPort = parser.accepts(
+      "statsd-port",
+      "Statsd port")
+      .withRequiredArg
+      .ofType(classOf[java.lang.Integer])
+      .defaultsTo(8125)
+
     val options: OptionSet = tryParse(parser, args)
     CommandLineUtils.checkRequiredArgs(parser, options, brokers)
 
@@ -198,7 +248,15 @@ object Configurator {
 
     logger.info("Producer Properties: %s".format(props.toString))
 
-    return new ProducerServlet(props)
+    val reportingProps = new Properties()
+
+    reportingProps.put("statsd.host", options.valueOf(statsdHost).toString)
+    reportingProps.put("statsd.port", options.valueOf(statsdPort).toString)
+    reportingProps.put("statsd.prefix", options.valueOf(statsdPrefix).toString)
+
+    logger.info("Reporting Properties: %s".format(reportingProps.toString))
+
+    return new ProducerServlet(props, reportingProps)
   }
 
   def tryParse(parser: OptionParser, args: Array[String]) = {

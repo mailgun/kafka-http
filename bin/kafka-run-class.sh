@@ -21,7 +21,6 @@ then
 fi
 
 base_dir=$(dirname $0)/..
-echo $base_dir
 
 SCALA_VERSION=2.9.2
 
@@ -53,7 +52,6 @@ if [ -z "$JAVA_HOME" ]; then
 else
   JAVA="$JAVA_HOME/bin/java"
 fi
-echo $CLASSPATH
 $JAVA $KAFKA_OPTS $KAFKA_JMX_OPTS -cp $CLASSPATH "$@"
 
 exitval=$?
