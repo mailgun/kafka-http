@@ -21,19 +21,9 @@ then
 fi
 
 base_dir=$(dirname $0)/..
+echo $base_dir
 
-SCALA_VERSION=2.8.0
-
-# assume all dependencies have been packaged into one jar with sbt-assembly's task "assembly-package-dependency"
-for file in $base_dir/core/target/scala-2.8.0/*.jar;
-do
-  CLASSPATH=$CLASSPATH:$file
-done
-
-for file in $base_dir/perf/target/scala-${SCALA_VERSION}/kafka*.jar;
-do
-  CLASSPATH=$CLASSPATH:$file
-done
+SCALA_VERSION=2.9.2
 
 # classpath addition for release
 for file in $base_dir/libs/*.jar;
@@ -63,7 +53,7 @@ if [ -z "$JAVA_HOME" ]; then
 else
   JAVA="$JAVA_HOME/bin/java"
 fi
-
+echo $CLASSPATH
 $JAVA $KAFKA_OPTS $KAFKA_JMX_OPTS -cp $CLASSPATH "$@"
 
 exitval=$?

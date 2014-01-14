@@ -41,9 +41,9 @@ object KafkaHttpBuild extends Build {
   </license>
 </licenses>,
     scalacOptions ++= Seq("-deprecation", "-unchecked", "-g:none"),
-    crossScalaVersions := Seq("2.8.0","2.8.2", "2.9.1", "2.9.2"),
-    scalaVersion := "2.8.0",
-    version := "0.8.0-beta1",
+    crossScalaVersions := Seq("2.9.1", "2.9.2"),
+    scalaVersion := "2.9.2",
+    version := "0.0.1",
     publishTo := Some("Apache Maven Repo" at "https://repository.apache.org/service/local/staging/deploy/maven2"),
     credentials += Credentials(Path.userHome / ".m2" / ".credentials"),
     buildNumber := System.getProperty("build.number", ""),
@@ -51,6 +51,7 @@ object KafkaHttpBuild extends Build {
     releaseName <<= (name, version, scalaVersion) {(name, version, scalaVersion) => name + "_" + scalaVersion + "-" + version},
     javacOptions ++= Seq("-Xlint:unchecked", "-source", "1.5"),
     parallelExecution in Test := false, // Prevent tests from overrunning each other
+
     libraryDependencies ++= Seq(
       "log4j"                 % "log4j"        % "1.2.15",
       "net.sf.jopt-simple"     % "jopt-simple"  % "3.2",
@@ -68,8 +69,7 @@ object KafkaHttpBuild extends Build {
         <exclude module="jmxtools"/>
         <exclude module="mail"/>
         <exclude module="jms"/>
-        <dependency org="org.apache.kafka" name="kafka_2.9.2" rev="0.8.0">
-      </dependency>
+        <dependency org="org.apache.kafka" name="kafka_2.9.2" rev="0.8.0"></dependency>
         <dependency org="org.apache.zookeeper" name="zookeeper" rev="3.3.4">
           <exclude org="log4j" module="log4j"/>
           <exclude org="jline" module="jline"/>
@@ -82,11 +82,14 @@ object KafkaHttpBuild extends Build {
          </dependency>
       </dependencies>
   )
+  libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-compiler" % _ )
 
   val release = TaskKey[Unit]("release", "Creates a deployable release directory file with dependencies, config, and scripts.")
   val releaseTask = release <<= ( packageBin in Compile, dependencyClasspath in Runtime, exportedProducts in Compile,
     target, releaseName) map { (packageBin, deps, products, target, releaseName) =>
-      val jarFiles = deps.files.filter(f => !products.files.contains(f) && f.getName.endsWith(".jar"))
+      // NOTE: explicitly exclude sbt-launch.jar dep here, because it can use different scala version and if copied to jars folder will break the build
+      // Found the hard way :-(
+      val jarFiles = deps.files.filter(f => !products.files.contains(f) && f.getName.endsWith(".jar") && f.getName != "sbt-launch.jar")
       val destination = target / "RELEASE" / releaseName
       IO.copyFile(packageBin, destination / packageBin.getName)
       IO.copy(jarFiles.map { f => (f, destination / "libs" / f.getName) })
