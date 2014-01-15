@@ -19,7 +19,7 @@ object RestServer
       var server = new Server(8080)
 
       // This is to serialize access to endpoints
-      var threadPool = new QueuedThreadPool(10)
+      var threadPool = new QueuedThreadPool(40)
       server.setThreadPool(threadPool)
       var context = new ServletContextHandler(ServletContextHandler.SESSIONS)
 

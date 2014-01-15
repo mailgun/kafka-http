@@ -99,7 +99,6 @@ class ProducerServlet(properties:Properties, reportingProps: Properties) extends
     for (messageI <- messages) {
       var message = asObject("message", messageI)
       list += toKeyedMessage(topic, message)
-      logger.info("Got something: %s".format(list))
     }
     list
   }

@@ -59,7 +59,7 @@ object KafkaHttpBuild extends Build {
       "org.eclipse.jetty"      % "jetty-server" % "8.0.4.v20111024",
       "org.eclipse.jetty"      % "jetty-servlet" % "8.0.4.v20111024",
       "org.mongodb"            % "mongo-java-driver" % "2.11.3",
-      "org.apache.kafka"       % "kafka_2.9.2" % "0.8.0",
+      "org.apache.kafka"       % "kafka_2.9.2" % "0.8.0"
     ),
     // The issue is going from log4j 1.2.14 to 1.2.15, the developers added some features which required
     // some dependencies on various sun and javax packages.
