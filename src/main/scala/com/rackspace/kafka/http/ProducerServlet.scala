@@ -89,6 +89,10 @@ class ProducerServlet(properties:Properties, reportingProps: Properties) extends
       case "application/bson" => getObjectFromBson(request)
       case _ => throw new Exception("Unsupported content type: %s".format(request.getContentType()))
     }
+    if(obj == null) {
+      throw new Exception("Provide a payload for the POST request")
+    }
+
     var messagesI = obj.get("messages")
     if(messagesI == null) {
       throw new Exception("Expected 'messages' list")
@@ -122,7 +126,7 @@ class ProducerServlet(properties:Properties, reportingProps: Properties) extends
   def getTopic(request:HttpServletRequest):String = {
     var segments = request.getRequestURI().split("/")
     if (segments.length != 3 || segments(1) != "topics") {
-      throw new Exception("Please provide topic /topics/<topic> to post to: %s".format(segments(1)) )
+      throw new Exception("Please provide topic /topics/<topic> to post to")
     } 
     return segments(2)
   }
@@ -134,7 +138,7 @@ class ProducerServlet(properties:Properties, reportingProps: Properties) extends
 
     val start = System.currentTimeMillis()
     val data = new KeyedMessage[String, Array[Byte]](topic, "key", new Array[Byte](1))
-    //producer.send(messages:_*)
+    producer.send(messages:_*)
     statsd.recordExecutionTime("submitted", (System.currentTimeMillis() - start).toInt)
 
     var obj = new BasicBSONObject()

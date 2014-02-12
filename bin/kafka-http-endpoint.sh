@@ -1,5 +1,5 @@
 base_dir=$(dirname $0)
-export KAFKA_OPTS="-Xmx512M -server -Dcom.sun.management.jmxremote -Dlog4j.configuration=file:$base_dir/kafka-endpoint-log4j.properties"
+export KAFKA_OPTS="-Xmx2048M -server -Dcom.sun.management.jmxremote -Dlog4j.configuration=file:$base_dir/kafka-endpoint-log4j.properties -Dorg.eclipse.jetty.io.ChanelEndPoint.LEVEL=ALL"
 
 for file in $base_dir/../*.jar;
 do

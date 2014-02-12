@@ -18,6 +18,12 @@ object RestServer
       var servlet = Configurator.getServlet(args)
       var server = new Server(8080)
 
+      server.setAttribute("org.eclipse.jetty.server.Request.maxFormContentSize", 35 * 1024 * 1024)
+
+      for(connector <- server.getConnectors()){
+        connector.setRequestBufferSize(35 * 1024 * 1024);
+      }
+
       // This is to serialize access to endpoints
       var threadPool = new QueuedThreadPool(40)
       server.setThreadPool(threadPool)

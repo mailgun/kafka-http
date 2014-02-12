@@ -40,7 +40,7 @@ if [ -z "$KAFKA_JMX_OPTS" ]; then
 fi
 
 if [ -z "$KAFKA_OPTS" ]; then
-  KAFKA_OPTS="-Xmx512M -server  -Dlog4j.configuration=file:$base_dir/config/log4j.properties"
+  KAFKA_OPTS="-Xmx2048M -server  -Dlog4j.configuration=file:$base_dir/config/log4j.properties"
 fi
 
 if [  $JMX_PORT ]; then
