@@ -1,3 +1,5 @@
+**WARNING**: This project is obsolete. Please consider switching to either [Kafka-Pixy](https://github.com/mailgun/kafka-pixy) by [Mailgun](http://www.mailgun.com) or [Kafka REST Proxy](http://docs.confluent.io/1.0/kafka-rest/docs/index.html) by [Confluent](http://www.confluent.io)
+
 Kafka HTTP endpoint
 -------------------
 
